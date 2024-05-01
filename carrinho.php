@@ -1,52 +1,3 @@
-<?php
-// Iniciar ou retomar a sessão
-session_start();
-
-// Verificar se o carrinho está vazio
-if (!isset($_SESSION['carrinho']) || empty($_SESSION['carrinho'])) {
-    echo "<p>O carrinho está vazio.</p>";
-} else {
-    // Incluir arquivo de configuração do banco de dados
-    require_once('config.php');
-
- // Recuperar os produtos do carrinho
-$produtos_carrinho = $_SESSION['carrinho'];
-
-// Consulta SQL para selecionar os detalhes de cada produto no carrinho
-$sql = "SELECT * FROM produtos WHERE id IN (" . implode(",", $produtos_carrinho) . ")";
-$resultado = mysqli_query($conn, $sql);
-
-// Exibir produtos no carrinho
-while ($produto = mysqli_fetch_assoc($resultado)) {
-    $id_produto = $produto['id'];
-    // Verificar se a quantidade está definida no carrinho
-    $quantidade = isset($_SESSION['quantidades'][$id_produto]) ? $_SESSION['quantidades'][$id_produto] : 1;
-?>
-
-        <div>
-            <h2><?php echo $produto['nome']; ?></h2>
-            <p>Preço unitário: R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></p>
-            <p>Quantidade: <?php echo $quantidade; ?></p>
-            <form method="post" action="alterar_quantidade.php">
-                <input type="hidden" name="produto_id" value="<?php echo $id_produto; ?>">
-                <button type="submit" name="aumentar_quantidade">Aumentar Quantidade</button>
-                <button type="submit" name="diminuir_quantidade">Diminuir Quantidade</button>
-                <button type="submit" name="remover_produto">Remover Produto</button>
-            </form>
-        </div>
-        </div>
-<?php
-    }
-
-    // Botão para finalizar pedido
-?>
-    <form method="post" action="finalizar_pedido.php">
-        <button type="submit" name="finalizar_pedido">Finalizar Pedido</button>
-    </form>
-<?php
-}
-?>
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -96,3 +47,58 @@ while ($produto = mysqli_fetch_assoc($resultado)) {
 
 </body>
 </html>
+
+<?php
+// Iniciar ou retomar a sessão
+session_start();
+
+// Verificar se o carrinho está vazio
+if (!isset($_SESSION['carrinho']) || empty($_SESSION['carrinho'])) {
+    echo "<p>O carrinho está vazio.</p>";
+} else {
+    // Incluir arquivo de configuração do banco de dados
+    require_once('config.php');
+
+ // Recuperar os produtos do carrinho
+    $produtos_carrinho = $_SESSION['carrinho'];
+
+    // Consulta SQL para selecionar os detalhes de cada produto no carrinho
+    $sql = "SELECT * FROM produtos WHERE id IN (" . implode(",", $produtos_carrinho) . ")";
+    $resultado = mysqli_query($conn, $sql);
+
+// Exibir produtos no carrinho
+    while ($produto = mysqli_fetch_assoc($resultado)) {
+        $id_produto = $produto['id'];
+        // Verificar se a quantidade está definida no carrinho
+        $quantidade = isset($_SESSION['quantidades'][$id_produto]) ? $_SESSION['quantidades'][$id_produto] : 1;
+    ?>
+        <div class="container">
+            <div class="">
+                <h2><?php echo $produto['nome']; ?></h2>
+                <p>Preço unitário: R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></p>
+                <p>Quantidade: <?php echo $quantidade; ?></p>
+                <form method="post" action="alterar_quantidade.php">
+                    <input type="hidden" name="produto_id" value="<?php echo $id_produto; ?>">
+                    <button type="submit" name="aumentar_quantidade">Aumentar Quantidade</button>
+                    <button type="submit" name="diminuir_quantidade">Diminuir Quantidade</button>
+                    <button type="submit" name="remover_produto">Remover Produto</button>
+                    <br><br>
+                </form>
+            </div>
+        </div>   
+    <?php
+    }
+
+    // Botão para finalizar pedido
+?>
+    <form method="post" action="finalizar_pedido.php">
+        <button type="submit" name="finalizar_pedido">Finalizar Pedido</button>
+    </form>
+<?php
+}
+?>
+
+
+
+
+
